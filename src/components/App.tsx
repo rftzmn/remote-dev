@@ -12,26 +12,27 @@ import ResultsCount from "./ResultsCount";
 import SortingControls from "./SortingControls";
 import JobList from "./JobList";
 import PaginationControls from "./PaginationControls";
+import { useJobItems } from "../lib/hooks";
 
 function App() {
-  const [jobItems, setJobItems] = useState([]);
   const [searchText, setSearchText] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  // const { jobItemsSliced: jobItems, isLoading } = useJobItems(searchText);
+  const [jobItems, isLoading] = useJobItems(searchText);
+  const [activeId, setActiveId] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!searchText) return;
-
-    const fetchData = async () => {
-      setIsLoading(true);
-      const response = await fetch(
-        `https://bytegrad.com/course-assets/projects/rmtdev/api/data?search=${searchText}`
-      );
-      const data = await response.json();
-      setIsLoading(false);
-      setJobItems(data.jobItems);
+    const handleHashChange = () => {
+      const id = +window.location.hash.slice(1);
+      setActiveId(id);
     };
-    fetchData();
-  }, [searchText]);
+    handleHashChange();
+
+    window.addEventListener("hashchange", handleHashChange);
+
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange);
+    };
+  }, []);
 
   return (
     <>
@@ -44,7 +45,7 @@ function App() {
         <SearchForm searchText={searchText} setSearchText={setSearchText} />
       </Header>
       <Container>
-        <Sidebar jobItems={jobItems}>
+        <Sidebar>
           <SidebarTop>
             <ResultsCount />
             <SortingControls />
