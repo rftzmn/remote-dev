@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { JobItem, JobItemExpanded } from "./types";
 import { BASE_API_URL } from "./constants";
 import { useQuery } from "@tanstack/react-query";
 import { handleError } from "./utils";
+import { BookmarksContext } from "../contexts/BookmarksContextProvider";
 
 type JobItemAPIResponse = {
   public: boolean;
@@ -147,7 +148,10 @@ export function useActiveId() {
   return activeId;
 }
 
-export function useLocalStorage(key: string, initialValue) {
+export function useLocalStorage<T>(
+  key: string,
+  initialValue: T
+): [T, React.Dispatch<React.SetStateAction<T>>] {
   //   const bookmarkedIdsFromLocalStorage = JSON.parse(localStorage.getItem("bookmarkedIds") || "[]");
   const [value, setValue] = useState(() =>
     JSON.parse(localStorage.getItem(key) || JSON.stringify(initialValue))
@@ -158,4 +162,16 @@ export function useLocalStorage(key: string, initialValue) {
   }, [value, key]);
 
   return [value, setValue] as const;
+}
+
+//----------------------------------------------
+
+export function useBookmarksContext() {
+  const context = useContext(BookmarksContext);
+  if (!context) {
+    throw new Error(
+      "useContext(BookmarksContext) must be used withing a BookmakrsContextProvider"
+    );
+  }
+  return context;
 }
