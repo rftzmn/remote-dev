@@ -177,7 +177,7 @@ export function useLocalStorage<T>(
   initialValue: T
 ): [T, React.Dispatch<React.SetStateAction<T>>] {
   //   const bookmarkedIdsFromLocalStorage = JSON.parse(localStorage.getItem("bookmarkedIds") || "[]");
-  const [value, setValue] = useState(() =>
+  const [value, setValue] = useState<T>(() =>
     JSON.parse(localStorage.getItem(key) || JSON.stringify(initialValue))
   );
 
@@ -185,10 +185,7 @@ export function useLocalStorage<T>(
     localStorage.setItem(key, JSON.stringify(value));
   }, [value, key]);
 
-  return [value, setValue] as const satisfies [
-    T,
-    React.Dispatch<React.SetStateAction<T>>
-  ];
+  return [value, setValue];
 }
 
 export function useOnClickOutside(
