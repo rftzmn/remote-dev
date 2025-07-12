@@ -185,7 +185,10 @@ export function useLocalStorage<T>(
     localStorage.setItem(key, JSON.stringify(value));
   }, [value, key]);
 
-  return [value, setValue] as const;
+  return [value, setValue] as const satisfies [
+    T,
+    React.Dispatch<React.SetStateAction<T>>
+  ];
 }
 
 export function useOnClickOutside(
@@ -247,3 +250,4 @@ export function useJobItemsContext() {
   }
   return context;
 }
+// error TS4104: The type 'readonly [any, Dispatch<any>]' is 'readonly' and cannot be assigned to the mutable type '[T, Dispatch<SetStateAction<T>>]'
